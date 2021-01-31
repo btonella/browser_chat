@@ -43,14 +43,14 @@ def callback(ch, method, properties, body):
     print("[x] Message from RabbitMQ:", body)
 
     body_ = body.decode("utf8")
-    print('body: ', body_)
+    # print('body: ', body_)
 
     if (not isinstance(body_, list)):
         body_ = [body_]
     for item in body_:
         send_back.append(item)
 
-    print("send_back", send_back)
+    # print("send_back", send_back)
     Messages().save_message(send_back)
 
 

@@ -11,8 +11,6 @@ def find_stock(key):
             for row in reader:
                 if (len(row) > 0):
                     value = row[-2]
-                    print(row)
-                    print(value)
             if (value == 'N/D'):
                 return f'{key} quote per share not found'
             return f'{key} quote is ${value} per share'

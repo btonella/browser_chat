@@ -22,7 +22,7 @@ def main():
         return redirect("/login")
 
     chat = Messages().get_messages()
-    print('chat: '+str(chat))
+    # print('chat: '+str(chat))
     return render_template('main.html', user=session["logged_user"], chat=chat)
 
 
@@ -82,7 +82,6 @@ def send():
         print('message error')
     elif (isinstance(resp, str)):
         # is stock
-        print('here')
         Messages().save_message(resp)
     else:
         print('message error')
