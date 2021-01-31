@@ -15,6 +15,16 @@ class TestApp(unittest.TestCase):
         self.assertIn(string, self.response.data.decode('utf-8'))
         self.assertIn('text/html', self.response.content_type)
 
+    def test_chat0(self):
+        url = '/'
+        string = 'Chat Page 0'
+        self.default_test(url, string)
+
+    def test_chat1(self):
+        url = 'chat1'
+        string = 'Chat Page 1'
+        self.default_test(url, string)
+
     def test_signin(self):
         url = 'signin'
         string = 'SignIn'
@@ -37,7 +47,8 @@ class TestApp(unittest.TestCase):
             "username": 'admin',
             "password": 'admin'
         }
-        self.default_test(url, string, method='POST', status_expected=302, data=data)  # redirect code
+        self.default_test(url, string, method='POST',
+                          status_expected=302, data=data)  # redirect code
 
     def test_create(self):
         url = 'create'
@@ -46,7 +57,8 @@ class TestApp(unittest.TestCase):
             "username": 'admin',
             "password": 'admin'
         }
-        self.default_test(url, string, method='POST', status_expected=302, data=data)  # redirect code
+        self.default_test(url, string, method='POST',
+                          status_expected=302, data=data)  # redirect code
 
     def test_send(self):
         url = 'send'
@@ -54,5 +66,5 @@ class TestApp(unittest.TestCase):
         data = {
             "message": 'message'
         }
-        self.default_test(url, string, method='POST', status_expected=302, data=data)  # redirect code
-
+        self.default_test(url, string, method='POST',
+                          status_expected=302, data=data)  # redirect code
