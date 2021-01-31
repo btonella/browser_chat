@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}SignUp Page{% endblock %}
+{% block head %}
+{{ super() }}
+<style type="text/css">
+    .important {
+        color: #16314d;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1>SignUp Page</h1>
+<p class="important">
+    Create your account
+</p>
+
+
+<form method="POST" action="/create">
+    <p><label>Username:</label> <input class="form-control" type="text" name="username" required></p>
+    <p><label>Password:</label> <input class="form-control" type="password" name="password" required></p>
+    <p><button class="btn btn-primary" type="submit">Submit</button></p>
+</form>
+{% endblock %}

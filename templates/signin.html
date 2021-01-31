@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}SignIn{% endblock %}
+{% block head %}
+{{ super() }}
+<style type="text/css">
+    .important {
+        color: #336699;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1>SignIn</h1>
+
+<form method="POST" action="/auth">
+    <p><label>Username:</label> <input class="form-control" type="text" name="username" required></p>
+    <p><label>Password:</label> <input class="form-control" type="password" name="password" required></p>
+    <p><button class="btn btn-primary" type="submit">Submit</button></p>
+</form>
+{% endblock %}

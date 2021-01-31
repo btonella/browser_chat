@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block title %}Chat Page{% endblock %}
+{% block head %}
+{{ super() }}
+<style type="text/css">
+    .important {
+        color: #336699;
+    }
+</style>
+{% endblock %}
+{% block content %}
+    <meta http-equiv="refresh" content="10" >
+    <h1>Chat Page - User: {{user}}</h1>
+    <div>
+        <tbody>
+            Chat:
+            {% if chat == [] %}
+            <p>
+                No messages
+            </p>
+            {% endif %}
+            <div>
+                {% for message in chat %}
+                    <div>
+                        <!-- {{message.username}}: {{message.text}} -->
+                        {{message}}
+                    </div>
+                {% endfor %}
+            </div>
+        </tbody>
+    </div>
+    <div>
+        <form method="POST" action="/send">
+            <p>
+                <label>Write a message: </label>
+                <input class="form-control" type="text" name="message" required>
+                <label>Press enter to send </label>
+            </p>
+        </form>
+    </div>
+    <p>
+        <a href="{{url_for('logout')}}">
+            <input type="button" value="LOGOUT">
+        </a>
+    </p>
+{% endblock %}
