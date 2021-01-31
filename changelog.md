@@ -9,3 +9,7 @@
 
 ## version 1.0.1
 - added test
+
+## version 1.0.2
+- added button to create account
+- added second chat logic and page
