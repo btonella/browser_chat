@@ -6,3 +6,6 @@
 - added encrypt on password
 - added talk with stock api
 - added talk with rabbitmq
+
+## version 1.0.1
+- added test
