@@ -8,6 +8,7 @@ from datetime import datetime
 
 connection = None
 
+# CONSUME MESSAGE - CHAT 0
 @retry((pika.exceptions.AMQPConnectionError, pika.exceptions.ConnectionClosed, KeyError), tries=5, delay=1)
 def waitRabbitMessage():
 
@@ -20,7 +21,6 @@ def waitRabbitMessage():
 
         channel = connection.channel()
 
-        # CONSUME MESSAGE
         channel.exchange_declare(
             exchange="chat", exchange_type="fanout", durable=True)
         result = channel.queue_declare('', exclusive=True)
@@ -38,9 +38,40 @@ def waitRabbitMessage():
         raise e
 
 
+# CONSUME MESSAGE - CHAT 1
+@retry((pika.exceptions.AMQPConnectionError, pika.exceptions.ConnectionClosed, KeyError), tries=5, delay=1)
+def waitRabbitMessage_chat1():
+
+    global connection
+    try:
+        # connect with rabbit
+        if (connection is None):
+            parameters = pika.URLParameters(config.get('RABBIT_MQ_URL'))
+            connection = pika.BlockingConnection(parameters)
+
+        channel = connection.channel()
+
+        channel.exchange_declare(
+            exchange="chat1", exchange_type="fanout", durable=True)
+        result = channel.queue_declare('', exclusive=True)
+        queue_name = result.method.queue
+        channel.queue_bind(exchange='chat1', queue=queue_name)
+        print('[x] Listening RabbitMQ ')
+
+        channel.basic_consume(
+            queue=queue_name, on_message_callback=callback1, auto_ack=True)
+        channel.start_consuming()
+
+    except (pika.exceptions.AMQPConnectionError, pika.exceptions.ConnectionClosed, KeyError) as e:
+        print('Rabbitmq connection expired')
+        connection = None
+        raise e
+
+
+
 def callback(ch, method, properties, body):
     send_back = []
-    print("[x] Message from RabbitMQ:", body)
+    print("[x] Message from RabbitMQ - chat0:", body)
 
     body_ = body.decode("utf8")
     # print('body: ', body_)
@@ -54,7 +85,21 @@ def callback(ch, method, properties, body):
     Messages().save_message(send_back)
 
 
-def add_chat_message(text, user):
+def callback1(ch, method, properties, body):
+    send_back = []
+    print("[x] Message from RabbitMQ - chat1:", body)
+
+    body_ = body.decode("utf8")
+
+    if (not isinstance(body_, list)):
+        body_ = [body_]
+    for item in body_:
+        send_back.append(item)
+
+    Messages().save_message(send_back, chat=1)
+
+
+def add_chat_message(text, user, chat_name='chat'):
     finished = False
     now = str(datetime.now())[:19]
     if ('/stock=' in text):
@@ -73,10 +118,10 @@ def add_chat_message(text, user):
             parameters = pika.URLParameters(config.get('RABBIT_MQ_URL'))
             connection = pika.BlockingConnection(parameters)
             channel = connection.channel()
-            channel.queue_declare(queue='chat', durable=True)
+            channel.queue_declare(queue=chat_name, durable=True)
             channel.basic_publish(
-                exchange='chat',
-                routing_key='chat',
+                exchange=chat_name,
+                routing_key=chat_name,
                 body=body,
                 properties=pika.BasicProperties(
                     delivery_mode=2,

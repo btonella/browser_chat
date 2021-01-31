@@ -21,9 +21,19 @@ def main():
     if "logged_user" not in session or session["logged_user"] is None:
         return redirect("/login")
 
+    session['chat_name'] = 'chat'
     chat = Messages().get_messages()
-    # print('chat: '+str(chat))
     return render_template('main.html', user=session["logged_user"], chat=chat)
+
+
+@app.route('/chat1', methods=['GET'])
+def chat1():
+    if "logged_user" not in session or session["logged_user"] is None:
+        return redirect("/login")
+
+    session['chat_name'] = 'chat1'
+    chat = Messages().get_messages(chat=1)
+    return render_template('chat1.html', user=session["logged_user"], chat=chat)
 
 
 @app.route('/signup', methods=['GET'])
@@ -75,26 +85,42 @@ def logout():
 @app.route('/send', methods=['POST', ])
 def send():
     text = request.form['message']
-    resp = add_chat_message(text, session['logged_user'])
+    chat_name = session['chat_name']
+    if (chat_name == 'chat'):
+        redirect_url = '/'
+        chat = 0
+    else:
+        redirect_url = '/chat1'
+        chat = 1
+    print('chat_name: ', chat_name)
+    print('redirect_url: ', redirect_url)
+    print('chat: ', chat)
+
+    resp = add_chat_message(text, session['logged_user'], chat_name=chat_name)
     if (isinstance(resp, tuple) and resp[0] == True):
         print('message save: '+str(resp[1]))
     elif (isinstance(resp, tuple) and resp[0] == False):
         print('message error')
     elif (isinstance(resp, str)):
         # is stock
-        Messages().save_message(resp)
+        Messages().save_message(resp, chat=chat)
     else:
         print('message error')
 
-    return redirect('/')
+    return redirect(redirect_url)
 
 
 if __name__ == '__main__':
 
     print("services running, press ctrl+c to stop")
     try:
-        print("starting thread Rabbit")
+        print("starting thread Rabbit - chat0")
         thread = threading.Thread(target=waitRabbitMessage)
+        thread.daemon = True
+        thread.start()
+
+        print("starting thread Rabbit - chat1")
+        thread = threading.Thread(target=waitRabbitMessage_chat1)
         thread.daemon = True
         thread.start()
 
